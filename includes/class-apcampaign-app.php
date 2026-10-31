@@ -293,7 +293,8 @@ if (!class_exists('APCampaign_App')) {
                     $requested_mode
                 ),
                 ARRAY_A
-            ) ?: [];
+            );
+            if ($wpdb->last_error !== '' || !is_array($rows)) wp_send_json_error(['message' => 'Could not load saved templates.'], 500);
             $templates = array_map(static function (array $row): array {
                 $design = json_decode((string) ($row['design_json'] ?? '{"blocks":[]}'), true);
                 if (!is_array($design)) {
@@ -324,8 +325,9 @@ if (!class_exists('APCampaign_App')) {
                     $t['campaigns'], $t['content_snapshots'], $requested_mode
                 ),
                 ARRAY_A
-            ) ?: [];
-            $sent_designs = array_map(static function (array $row): array {
+            );
+            if ($wpdb->last_error !== '' || !is_array($sent_rows)) wp_send_json_error(['message' => 'Could not load sent designs.'], 500);
+            $sent_designs = array_map(static function (array $row) use ($requested_mode): array {
                 $design = json_decode((string) ($row['design_json'] ?? '{"blocks":[]}'), true);
                 if (!is_array($design)) {
                     $design = ['blocks' => []];
