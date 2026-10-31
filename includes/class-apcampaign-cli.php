@@ -74,6 +74,7 @@ if (!class_exists('APCampaign_CLI')) {
                 'design' => $design,
                 'category' => 'announcement',
             ]);
+            if (!empty($template['error']) || empty($template['template_id'])) WP_CLI::error('Could not save template.');
             $list = APCampaign_Lifecycle::create_contact_list([
                 'list_key' => 'readers_' . $run_key,
                 'name' => 'Smoke Reader List',

@@ -162,7 +162,7 @@ if (!class_exists('APCampaign_Lifecycle')) {
                 $rendered = $mode === 'block' ? APCampaign_Renderer::render_from_design($design) : $raw_html;
             }
 
-            $wpdb->insert($t['templates'], [
+            $inserted = $wpdb->insert($t['templates'], [
                 'template_key' => $template_key,
                 'name' => sanitize_text_field((string) ($data['name'] ?? 'Campaign Template')),
                 'description' => sanitize_textarea_field((string) ($data['description'] ?? '')),
@@ -177,6 +177,7 @@ if (!class_exists('APCampaign_Lifecycle')) {
                 'updated_at' => $now,
             ]);
 
+            if ($inserted === false || (int) $wpdb->insert_id < 1) return ['error' => 'Could not save template.'];
             return ['template_id' => (int) $wpdb->insert_id, 'template_key' => $template_key];
         }
 

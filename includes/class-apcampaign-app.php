@@ -373,6 +373,9 @@ if (!class_exists('APCampaign_App')) {
                 'category' => 'user',
                 'status' => 'active',
             ]);
+            if (!empty($template['error']) || empty($template['template_id'])) {
+                wp_send_json_error(['message' => 'Could not save template.'], 500);
+            }
             wp_send_json_success($template);
         }
 
