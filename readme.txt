@@ -4,7 +4,7 @@ Tags: newsletter, email marketing, campaigns
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.0.14
+Stable tag: 1.0.15
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -42,6 +42,10 @@ The plugin stores campaign content, contact-list information, delivery records, 
 Campaign and audience data is retained when the plugin is uninstalled. Make a backup before removing retained data manually.
 
 == Changelog ==
+
+= 1.0.15 =
+* Restrict site-wide campaign settings to site administrators.
+
 
 = 1.0.12 =
 * Improve scheduled delivery safety and reporting when storage is unavailable.

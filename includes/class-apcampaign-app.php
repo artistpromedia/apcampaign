@@ -428,6 +428,9 @@ if (!class_exists('APCampaign_App')) {
         public static function ajax_save_settings(): void
         {
             self::ajax_guard();
+            if (!current_user_can('manage_options')) {
+                wp_send_json_error(['message' => 'Only a site administrator can change campaign settings.'], 403);
+            }
             update_option('apcampaign_default_from_name', sanitize_text_field(wp_unslash($_POST['default_from_name'] ?? '')));
             update_option('apcampaign_default_from_email', sanitize_email(wp_unslash($_POST['default_from_email'] ?? '')));
             update_option('apcampaign_spam_pass_score', max(0, min(100, absint($_POST['spam_pass_score'] ?? 70))));
@@ -1242,6 +1245,7 @@ if (!class_exists('APCampaign_App')) {
         private static function composer_settings(): array
         {
             return [
+                'can_manage_settings' => current_user_can('manage_options'),
                 'default_from_name' => (string) get_option('apcampaign_default_from_name', get_bloginfo('name')),
                 'default_from_email' => (string) get_option('apcampaign_default_from_email', get_option('admin_email')),
                 'spam_pass_score' => (int) get_option('apcampaign_spam_pass_score', 70),

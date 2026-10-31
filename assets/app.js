@@ -2485,6 +2485,10 @@
         }
 
         function renderSettings(settings) {
+            if (!settings.can_manage_settings) {
+                resultBox.innerHTML = '<p class="apcampaign-drag-note">Only a site administrator can change campaign settings.</p>';
+                return;
+            }
             resultBox.innerHTML = '<div class="apcampaign-property-editor" data-apcampaign-settings-form><div class="apcampaign-property-head"><strong>Composer Settings</strong><span>Standalone defaults</span></div>' +
                 controlInput('Default From Name', 'default_from_name', settings.default_from_name || '', 'Publication name') +
                 controlInput('Default From Email', 'default_from_email', settings.default_from_email || '', 'name@example.com', 'email') +
