@@ -204,6 +204,10 @@ final class APCampaign_Delivery
         foreach ($recipients as $recipient) {
             $email = sanitize_email((string) $recipient['email']);
             $suppressed = $email === '' ? true : self::is_suppressed($email);
+            if ($suppressed === false && ($campaign['source_plugin'] ?? '') === 'apsurveys-pro') {
+                $permitted = self::survey_recipient_allowed($campaign, $email);
+                $suppressed = $permitted === null ? null : !$permitted;
+            }
             if ($suppressed === null) {
                 $failed++;
                 $saved = $wpdb->update($t['send_job_recipients'], [
@@ -466,6 +470,16 @@ final class APCampaign_Delivery
             }
         }
         return false;
+    }
+
+    /** Recheck apLists membership at the moment a survey invitation is sent. */
+    public static function survey_recipient_allowed(array $campaign, string $email): ?bool
+    {
+        if (!class_exists('APSurveys_Pro') || !is_callable(['APSurveys_Pro', 'campaign_recipient_allowed'])) {
+            return null;
+        }
+        $result = APSurveys_Pro::campaign_recipient_allowed($campaign, $email);
+        return is_bool($result) ? $result : null;
     }
 
     private static function is_suppressed(string $email): ?bool
