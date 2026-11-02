@@ -345,8 +345,7 @@ final class APCampaign_Delivery
         }
 
         if ($event === 'unsubscribe') {
-            $suppression = APCampaign_Lifecycle::suppress_email((string) $recipient['email'], 'unsubscribe', 'apcampaign');
-            if (empty($suppression['suppression_id']) || !empty($suppression['error'])) {
+            if (!self::unsubscribe_recipient($recipient)) {
                 status_header(503);
                 nocache_headers();
                 echo '<!doctype html><meta charset="utf-8"><title>Unsubscribe unavailable</title><main style="max-width:640px;margin:10vh auto;font:18px/1.5 system-ui;padding:24px"><h1>We could not process your unsubscribe request</h1><p>Please try again later or contact the sender directly.</p></main>';
@@ -470,6 +469,21 @@ final class APCampaign_Delivery
             }
         }
         return false;
+    }
+
+    /** Suppress campaigns first; survey invitations also revoke apLists consent. */
+    public static function unsubscribe_recipient(array $recipient): bool
+    {
+        global $wpdb;
+        $email = (string) ($recipient['email'] ?? '');
+        $suppression = APCampaign_Lifecycle::suppress_email($email, 'unsubscribe', 'apcampaign');
+        if (empty($suppression['suppression_id']) || !empty($suppression['error'])) return false;
+        $tables = APCampaign_Schema::tables();
+        $campaign = $wpdb->get_row($wpdb->prepare('SELECT source_plugin FROM %i WHERE id=%d', $tables['campaigns'], (int) ($recipient['campaign_id'] ?? 0)), ARRAY_A);
+        if (!is_array($campaign) || $wpdb->last_error !== '') return false;
+        if (($campaign['source_plugin'] ?? '') !== 'apsurveys-pro') return true;
+        if (!is_callable(['APLists_Lifecycle', 'suppress_email'])) return false;
+        return APLists_Lifecycle::suppress_email($email, 'unsubscribe', 'apsurveys');
     }
 
     /** Recheck apLists membership at the moment a survey invitation is sent. */

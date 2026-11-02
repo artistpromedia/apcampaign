@@ -4,7 +4,7 @@ Tags: newsletter, email marketing, campaigns
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.0.16
+Stable tag: 1.0.17
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -43,7 +43,10 @@ Campaign and audience data is retained when the plugin is uninstalled. Make a ba
 
 == Changelog ==
 
-= 1.0.16 =
+= 1.0.17 =
+* Synchronize survey invitation unsubscribes with apLists.
+
+= 1.0.17 =
 * Check survey-list consent before delivering survey invitations.
 
 = 1.0.15 =
